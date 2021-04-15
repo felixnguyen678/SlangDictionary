@@ -1,27 +1,28 @@
 package Model;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.Key;
 import java.util.ArrayList;
 
 public class Repository {
-    AVLTree<Slang> slangAVLTree;
-    AVLTree<Keyword> keywordAVLTree;
-    ArrayList<Slang> slangHistory;
-    ArrayList<Keyword> keywordHistory;
-
+    public AVLTree<Slang> slangAVLTree;
+    private AVLTree<Keyword> keywordAVLTree;
+    private ArrayList<Slang> slangHistory;
+    private ArrayList<Keyword> keywordHistory;
     // singleton
-    private static final Repository instance = new Repository();
-    private Repository(){ }
+    private static Repository instance = new Repository();
+    private Repository(){
+        slangAVLTree = new AVLTree<Slang>();
+        keywordAVLTree = new AVLTree<Keyword>();
+        slangHistory = new ArrayList<Slang>();
+        keywordHistory = new ArrayList<Keyword>();
+    }
     public static Repository getInstance(){ return instance;}
 
 
-    //import data
-    public void import_data(String _filepath){
-
-    }
-    // export data
-    public void export_data(String _filepath){
-    }
 
     // get history
     public ArrayList<Slang> getSlangHistory(){
@@ -38,7 +39,8 @@ public class Repository {
     public Slang findBySlang(Slang req){
         Slang res = slangAVLTree.find(req);
 
-        if(res != null){    // if there are not any slang, construct new Slang and put into history and return null
+        if(res == null){    // if there are not any slang, construct new Slang and put into history and return null
+            //System.out.println("This slang does not exist");
             req.addMeaning("This slang does not exist");
             slangHistory.add(req);
             return req;
@@ -68,14 +70,38 @@ public class Repository {
     public void addSlang(Slang _slang){
         // add to slang tree and keyword tree both
         slangAVLTree.insert(_slang);
+        //slangAVLTree.insert( new Slang("sdf", "sdf"));
+        /*
         for(String item : _slang.meanings){
             String[] kw = item.split("//W+");
 
         }
-
+        */
     }
     //  overwrite ( delete and insert)
     public void overwriteSlang(Slang _slang){
     }
 
+
+    //import data
+    public void import_data(String _filepath) throws IOException {
+        System.out.println("importing");
+        String line = null;
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(_filepath));
+
+        while((line = bufferedReader.readLine())!= null){
+            String[] _split = line.split("`");
+            addSlang(new Slang(_split[0], _split[1]));
+        }
+        System.out.println("successfully imported");
+    }
+    // export data
+    public void export_data(String _filepath){
+    }
+    // reset
+    public void reset(String _filepath) throws IOException {
+        instance = new Repository();
+        import_data(_filepath);
+
+    }
 }

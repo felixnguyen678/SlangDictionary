@@ -25,11 +25,7 @@ public class Keyword implements Comparable<Keyword> {
 
     @Override
     public int compareTo(Keyword _keyword) {
-        if(this.keyword.compareTo(_keyword.keyword)>0)
-            return 1;
-        if(this.keyword.compareTo(_keyword.keyword)<0)
-            return -1;
-        return 0;
+        return this.keyword.compareTo(_keyword.keyword);
     }
 
 

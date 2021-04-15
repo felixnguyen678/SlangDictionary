@@ -2,9 +2,11 @@ package Model;
 
 import java.util.ArrayList;
 
+import static java.lang.Math.pow;
+
 public class Slang implements Comparable<Slang> {
-    private String slang;
-    ArrayList<String> meanings = new ArrayList<String>();
+    public String slang;
+    private ArrayList<String> meanings = new ArrayList<String>();
     public String getSlang() {
         return slang;
     }
@@ -25,11 +27,6 @@ public class Slang implements Comparable<Slang> {
     }
     @Override
     public int compareTo(Slang _slang) {
-        if(this.slang.compareTo(_slang.slang)>0)
-            return 1;
-        if(this.slang.compareTo(_slang.slang)<0)
-            return -1;
-        return 0;
+        return this.slang.compareTo(_slang.slang);
     }
-
 }
