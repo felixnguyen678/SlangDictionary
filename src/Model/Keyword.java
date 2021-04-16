@@ -10,6 +10,10 @@ public class Keyword implements Comparable<Keyword> {
     public Keyword(String _keyword){
         this.keyword = _keyword;
     }
+    public Keyword(String _keyword, ArrayList<Slang> _slangs){
+        this.keyword = _keyword;
+        this.slangs = _slangs;
+    }
     public void addSlang(Slang _slang){
         slangs.add(_slang);
     }
@@ -25,7 +29,7 @@ public class Keyword implements Comparable<Keyword> {
 
     @Override
     public int compareTo(Keyword _keyword) {
-        return this.keyword.compareTo(_keyword.keyword);
+        return this.keyword.toLowerCase().compareTo(_keyword.keyword.toLowerCase());
     }
 
 

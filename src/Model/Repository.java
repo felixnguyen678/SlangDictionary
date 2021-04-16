@@ -1,14 +1,13 @@
 package Model;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.Key;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Repository {
-    public AVLTree<Slang> slangAVLTree;
+    private AVLTree<Slang> slangAVLTree;
     private AVLTree<Keyword> keywordAVLTree;
     private ArrayList<Slang> slangHistory;
     private ArrayList<Keyword> keywordHistory;
@@ -23,7 +22,7 @@ public class Repository {
     public static Repository getInstance(){ return instance;}
 
 
-
+    //---- CRUD modules
     // get history
     public ArrayList<Slang> getSlangHistory(){
         return slangHistory;
@@ -37,52 +36,82 @@ public class Repository {
     public void addKeywordHistory(Keyword _keyword) { keywordHistory.add(_keyword); };
     //    find by slang
     public Slang findBySlang(Slang req){
-        Slang res = slangAVLTree.find(req);
-
-        if(res == null){    // if there are not any slang, construct new Slang and put into history and return null
-            //System.out.println("This slang does not exist");
-            req.addMeaning("This slang does not exist");
-            slangHistory.add(req);
-            return req;
-        } else{         //else put into history and return slang
-            slangHistory.add(res);
-            return res;
-        }
+        return slangAVLTree.find(req);
     }
     //  find by Keyword
-    public ArrayList<Slang> findByKeyword(Keyword req){
-        Keyword res = keywordAVLTree.find(req);
-
-        if(res != null) {
-            ArrayList<Slang> res_slang_set = new ArrayList<Slang>();
-            Slang res_slang = new Slang(
-                    "There are not any slang like this",
-                    "");
-            req.addSlang(res_slang);
-            keywordHistory.add(req);
-            return res_slang_set;
-        } else{
-            keywordHistory.add(res);
-            return res.getSlangs();
-        }
+    public Keyword findByKeyword(Keyword req){
+        return keywordAVLTree.find(req);
     }
-    // split key words
+    // add slang and keyword
     public void addSlang(Slang _slang){
         // add to slang tree and keyword tree both
         slangAVLTree.insert(_slang);
-        //slangAVLTree.insert( new Slang("sdf", "sdf"));
-        /*
-        for(String item : _slang.meanings){
-            String[] kw = item.split("//W+");
+        for(String i : _slang.getMeanings()){// add keyword to keywordAVL tree
+            String[] split = i.split("\\W+");
+            for(String j : split){
+                Keyword keyword = null;
+                if((keyword =  keywordAVLTree.find(new Keyword(j))) != null){
+                    keyword.addSlang(_slang);
+                } else {
+                    keyword = new Keyword(j);
+                    keyword.addSlang(_slang);
+                    keywordAVLTree.insert(keyword);
+                }
 
+            }
         }
-        */
+    }
+    public void deleteSlang(Slang _slang){
+
+        Slang search = slangAVLTree.find(_slang);
+        if(search != null){
+            ArrayList<String> split1 = search.getMeanings();
+            for(String i: split1){
+                String[] split2 = i.split("\\W+");
+                for(String j : split2) {
+
+
+                    Keyword keyword = keywordAVLTree.find(new Keyword(j));
+                    if(keyword != null) {
+                        int loc = 0;
+                        ArrayList<Slang> slangArrayList = keyword.getSlangs();
+                        for (int t = 0; t < slangArrayList.size(); t++) {
+                            if (keyword.getSlangs().get(t).compareTo(_slang) == 0) {
+                                loc = t;
+                            }
+                        }
+                        slangArrayList.remove(loc);
+                        Keyword renewedKeyword = new Keyword(j, slangArrayList);
+                        keywordAVLTree.delete(renewedKeyword);
+                        keywordAVLTree.insert(renewedKeyword);
+                    }
+                }
+            }
+        }
+
+        slangAVLTree.delete(_slang);
+
+
+
     }
     //  overwrite ( delete and insert)
     public void overwriteSlang(Slang _slang){
+        Slang search = slangAVLTree.find(_slang);
+        if(search != null){
+        deleteSlang(search);
+        search = slangAVLTree.find(search);
+        if(search == null) System.out.println("ys");
+        addSlang(_slang);
+        }
+    }
+    public void duplicateSlang(Slang _slang){
+        Slang search = slangAVLTree.find(_slang);
+        search.addMeaning(_slang.getMeanings().get(0));
+        overwriteSlang(search);
     }
 
 
+    //----- IO Modules -----
     //import data
     public void import_data(String _filepath) throws IOException {
         System.out.println("importing");
@@ -91,7 +120,8 @@ public class Repository {
 
         while((line = bufferedReader.readLine())!= null){
             String[] _split = line.split("`");
-            addSlang(new Slang(_split[0], _split[1]));
+            Slang slang =  new Slang(_split[0], _split[1]);
+            addSlang(slang);
         }
         System.out.println("successfully imported");
     }
@@ -103,5 +133,8 @@ public class Repository {
         instance = new Repository();
         import_data(_filepath);
 
+    }
+    public Slang randomSlang(){
+        return slangAVLTree.randomNode();
     }
 }
