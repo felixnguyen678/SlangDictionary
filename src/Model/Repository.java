@@ -7,19 +7,26 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Repository {
-    private AVLTree<Slang> slangAVLTree;
+    public AVLTree<Slang> slangAVLTree;
     private AVLTree<Keyword> keywordAVLTree;
     private ArrayList<Slang> slangHistory;
     private ArrayList<Keyword> keywordHistory;
     // singleton
-    private static Repository instance = new Repository();
+    private static final Repository instance = new Repository();
     private Repository(){
         slangAVLTree = new AVLTree<Slang>();
         keywordAVLTree = new AVLTree<Keyword>();
         slangHistory = new ArrayList<Slang>();
         keywordHistory = new ArrayList<Keyword>();
+        try {
+            import_data("slang.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public static Repository getInstance(){ return instance;}
+
+    // debug
 
 
     //---- CRUD modules
@@ -45,7 +52,14 @@ public class Repository {
     // add slang and keyword
     public void addSlang(Slang _slang){
         // add to slang tree and keyword tree both
-        slangAVLTree.insert(_slang);
+        Slang search = slangAVLTree.find(_slang);
+        if(search != null){
+            search.addMeaning(_slang.getMeanings().get(0));
+            slangAVLTree.delete(search);
+            slangAVLTree.insert(search);
+        }
+        else
+            slangAVLTree.insert(_slang);
         for(String i : _slang.getMeanings()){// add keyword to keywordAVL tree
             String[] split = i.split("\\W+");
             for(String j : split){
@@ -120,8 +134,11 @@ public class Repository {
 
         while((line = bufferedReader.readLine())!= null){
             String[] _split = line.split("`");
-            Slang slang =  new Slang(_split[0], _split[1]);
-            addSlang(slang);
+            String[] _keyword = _split[1].split("[|]");
+            for(String i:_keyword){
+                Slang slang =  new Slang(_split[0], i);
+                addSlang(slang);
+            }
         }
         System.out.println("successfully imported");
     }
@@ -129,10 +146,16 @@ public class Repository {
     public void export_data(String _filepath){
     }
     // reset
-    public void reset(String _filepath) throws IOException {
-        instance = new Repository();
-        import_data(_filepath);
-
+    public void reset(String _filepath){
+        slangAVLTree = new AVLTree<Slang>();
+        keywordAVLTree = new AVLTree<Keyword>();
+        slangHistory = new ArrayList<Slang>();
+        keywordHistory = new ArrayList<Keyword>();
+        try {
+            import_data("slang.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public Slang randomSlang(){
         return slangAVLTree.randomNode();
