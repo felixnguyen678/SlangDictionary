@@ -41,7 +41,9 @@ public class SearchView {
                             if(actionEvent.getActionCommand().compareTo("delete slang")==0){
                                 Controller.getInstance().deleteSlang(textField.getText());
                             }
-
+                            if(actionEvent.getActionCommand().compareTo("edit slang")==0){
+                                Controller.getInstance().editSlang(textField.getText());
+                            }
                         }
                     }
             );
@@ -60,6 +62,12 @@ public class SearchView {
                             }
                             if(actionEvent.getActionCommand().compareTo("keyword")==0){
                                 Controller.getInstance().searchByKeyword(textField.getText());
+                            }
+                            if(actionEvent.getActionCommand().compareTo("delete slang")==0){
+                                Controller.getInstance().deleteSlang(textField.getText());
+                            }
+                            if(actionEvent.getActionCommand().compareTo("edit slang")==0){
+                                Controller.getInstance().editSlang(textField.getText());
                             }
                         }
                     }

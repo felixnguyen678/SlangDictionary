@@ -21,20 +21,20 @@ public class Controller {
 
 
     public void searchBySlang(String _slang){
-        ArrayList<Slang> slangs = new ArrayList<Slang>();
-        Slang req = new Slang(_slang);
-        Slang res = Repository.getInstance().findBySlang(req);
-        if(res == null){
-            JOptionPane.showMessageDialog(null, "We do not have any slang like this","Search warning", JOptionPane.WARNING_MESSAGE);
-            req.addMeaning("This slang doesn't exist");
-            Repository.getInstance().addSlangHistory(req);
-            slangs.add(req);
-            return;
-        }
-        else{
-            Repository.getInstance().addSlangHistory(res);
-            slangs.add(res);
-        }
+            ArrayList<Slang> slangs = new ArrayList<Slang>();
+            Slang req = new Slang(_slang);
+            Slang res = Repository.getInstance().findBySlang(req);
+            if(res == null){
+                JOptionPane.showMessageDialog(null, "We do not have any slang like this","Search warning", JOptionPane.WARNING_MESSAGE);
+                req.addMeaning("This slang doesn't exist");
+                Repository.getInstance().addSlangHistory(req);
+                slangs.add(req);
+                return;
+            }
+            else{
+                Repository.getInstance().addSlangHistory(res);
+                slangs.add(res);
+            }
         ResultsView resultsView = new ResultsView(slangs);
 
     }
@@ -89,11 +89,37 @@ public class Controller {
         JOptionPane.showMessageDialog(null, "Successfully reseted !!!");
 
     }
-    public ArrayList<Slang> randomSlang(){
+    public ArrayList<Slang> randomSlang(int number){
         ArrayList<Slang> slangs = new ArrayList<Slang>();
-        slangs.add(Repository.getInstance().randomSlang());
+        for(int i=0;i<number;i++)
+            slangs.add(Repository.getInstance().randomSlang());
         return slangs;
+    }
+    public void editSlang(String _slang){
+        Slang req = new Slang(_slang);
+        Slang res = Repository.getInstance().findBySlang(req);
+        if(res == null){
+            JOptionPane.showMessageDialog(null, "We do not have any slang like this","Search warning", JOptionPane.WARNING_MESSAGE);
+            req.addMeaning("This slang doesn't exist");
+            Repository.getInstance().addSlangHistory(req);
+            return;
+        }
+        else{
+            Repository.getInstance().addSlangHistory(res);
+        }
+        EditView editView = new EditView(res);
+    }
+    public void overwriteSlang(Slang _old, Slang _new){
+        Repository.getInstance().deleteSlang(_old);
+        Repository.getInstance().addSlang(_new);
+        JOptionPane.showMessageDialog(null, "Successful !!!");
+    }
+    public void CheckSlang(String _slang, String _meaningsToString){
+        Slang res = Repository.getInstance().findBySlang(new Slang(_slang));
+        if(res.meaningsToString().compareTo(_meaningsToString) == 0)
+            JOptionPane.showMessageDialog(null, "Congraculation, you have been right !!!");
+        else
+            JOptionPane.showMessageDialog(null, "Sorry, your choice has been wrong !!!");
 
     }
-
 }

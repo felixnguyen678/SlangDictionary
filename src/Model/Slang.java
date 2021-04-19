@@ -29,4 +29,11 @@ public class Slang implements Comparable<Slang> {
     public int compareTo(Slang _slang) {
         return this.slang.compareTo(_slang.slang);
     }
+    public String meaningsToString(){
+        String str = "";
+        for(String i: this.getMeanings()){
+            str += i;
+        }
+        return str;
+    }
 }

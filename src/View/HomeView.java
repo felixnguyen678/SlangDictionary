@@ -82,6 +82,14 @@ public class HomeView{
                     }
             );
             this.editSlangButton = new JButton("Edit Slang");
+            editSlangButton.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent actionEvent) {
+                            SearchView searchView = new SearchView("edit slang");
+                        }
+                    }
+            );
             this.deleteSlangButton = new JButton("Delete Slang");
             deleteSlangButton.addActionListener(
                     new ActionListener() {
@@ -106,13 +114,30 @@ public class HomeView{
                         @Override
                         public void actionPerformed(ActionEvent actionEvent) {
                             ResultsView resultsView = new ResultsView(
-                                    Controller.getInstance().randomSlang()
+                                    Controller.getInstance().randomSlang(1)
                             );
                         }
                     }
             );
             this.slangQuizButton = new JButton("Slang Quiz");
+            slangQuizButton.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent actionEvent) {
+                            QuizView quizView = new QuizView("slang");
+                        }
+                    }
+            );
             this.definitionQuizButton = new JButton("Definition Quiz");
+            definitionQuizButton.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent actionEvent) {
+                            QuizView quizView = new QuizView("definition");
+
+                        }
+                    }
+            );
 
             // group of buttons
             JPanel buttons = new JPanel(new GridBagLayout());

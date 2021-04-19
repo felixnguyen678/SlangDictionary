@@ -25,6 +25,7 @@ public class ResultsView {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        if(slangs.size() == 0) panel.add(new JLabel("Empty"));
         for(Slang i : slangs){
             for(String j : i.getMeanings()){
                 panel.add(new JLabel("slang: "));
